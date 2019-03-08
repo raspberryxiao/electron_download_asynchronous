@@ -1,0 +1,19 @@
+{
+  "name": "asyncdown",
+  "version": "1.0.0",
+  "description": "electron with downloads controller though async",
+  "main": "index.ts",
+  "author": "RaspberryXIAO",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "electron": "^4.0.7",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "request": "^2.88.0",
+    "request-progress": "^3.0.0"
+  }
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+    const { zip_remote_path, DOWNLOAD_TYPE } = require('./appconfig')
+      var ipcRenderer = require('electron').ipcRenderer;
+
+      var say_hello = function() {
+        ipcRenderer.send('hello');
+      };
+
+      var download_arduino_zip = function() {
+        ipcRenderer.send('download-zip', DOWNLOAD_TYPE.ARDUINO_BUILDER);
+      };
+
+      var download_esp_zip = function() {
+        ipcRenderer.send('download-zip', DOWNLOAD_TYPE.ESP_TOOLS);
+      };
+
+    ipcRenderer.on('hello', (event, msgs) => {
+        console.log('playPause pressed')
+    });
+
+    ipcRenderer.on('progress', (event, data) => {
+        console.log('event  ==> ', event);
+        switch (data.id){
+            case DOWNLOAD_TYPE.ESP_TOOLS: {
+                document.getElementById('esp-progress').value = data.progress;
+            }break;
+            case DOWNLOAD_TYPE.ARDUINO_BUILDER: {
+                document.getElementById('arudino-progress').value = data.progress;
+            }break;
+            default: break;
+        }
+        
+    });
+
+    ipcRenderer.on('error', (event, error) => {
+        console.log(error);
+    document.write(JSON.stringify(error));
+    });
+
+    </script>
+    <button onclick="download_arduino_zip();">下载arduino-builder</button>
+    <button onclick="download_esp_zip();">下载esp_tools</button>
+    <button onclick="say_hello();">say_hello</button>
+    <progress id='arudino-progress' value='0' max='100'>
+    </progress>
+    <progress id='esp-progress' value='0' max='100'>
+    </progress>
+  </body>
+</html>

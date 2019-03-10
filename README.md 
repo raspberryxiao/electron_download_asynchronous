@@ -1,0 +1,6 @@
+# nodejs with electron to  make a downloader though single thread.
+```
+    download/unzip/delete/update
+    write/read
+    file
+```

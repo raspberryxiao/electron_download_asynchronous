@@ -2,7 +2,7 @@
   "name": "asyncdown",
   "version": "1.0.0",
   "description": "electron with downloads controller though async",
-  "main": "index.ts",
+  "main": "index.js",
   "author": "RaspberryXIAO",
   "license": "MIT",
   "scripts": {

@@ -1,4 +1,4 @@
-const { app, ipcMain, BrowserWindow, webContents } = require('electron');
+const { app, ipcMain, BrowserWindow} = require('electron');
 
 // const request = require('request');
 // const progress = require('request-progress');
@@ -69,6 +69,27 @@ app.on('ready', function() {
   windows.loadFile('index.html');
   windows.show();
 
+  windows.on('close', (event) =>{
+    console.log('closing downloader process ...');
+    const exit_dailog = require('electron').dialog; 
+    exit_dailog.showMessageBox({
+      type: 'warning',
+      title: 'WARNING!!',
+      message: '将退出软件，下载将会被截止！您确定退出吗？',
+      buttons: ['YES', 'NO'],
+      // windows 下的关闭窗口返回值设定
+      cancelId: 5,
+    },(button_index) => {
+      switch (button_index) {
+        case 0: {
+          child.kill();          
+        }break;
+        case 1: 
+        default: event.preventDefault();
+      }
+    });
+  });
+
     setTimeout(function () {
   clearInterval(i);
   console.log('end');
@@ -77,8 +98,5 @@ app.on('ready', function() {
     console.log('ping');
   }, 1000);
 });
-
-
-
 
 

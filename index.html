@@ -2,7 +2,7 @@
 <html>
   <body>
     <script>
-    const { zip_remote_path, DOWNLOAD_TYPE } = require('./appconfig')
+    const CONFIG  = require('./appconfig')
       var ipcRenderer = require('electron').ipcRenderer;
 
       var say_hello = function() {
@@ -10,29 +10,67 @@
       };
 
       var download_arduino_zip = function() {
-        ipcRenderer.send('download-zip', DOWNLOAD_TYPE.ARDUINO_BUILDER);
+        ipcRenderer.send('ACTION_MSG', {
+          id: 'arudino-progress',
+          type: CONFIG.EVENT_TYPE.DOWNLOAD_EVENT,
+          data: CONFIG.REMOTE_RES.arduino_builder_mac,
+        });
       };
 
       var download_esp_zip = function() {
-        ipcRenderer.send('download-zip', DOWNLOAD_TYPE.ESP_TOOLS);
+        ipcRenderer.send('ACTION_MSG', {
+          id: 'esp-progress',
+          type: CONFIG.EVENT_TYPE.DOWNLOAD_EVENT,
+          data: CONFIG.REMOTE_RES.arduino_builder_win,
+        });
       };
-
+// 后续加载更多动作
     ipcRenderer.on('hello', (event, msgs) => {
         console.log('playPause pressed')
     });
 
-    ipcRenderer.on('progress', (event, data) => {
-        console.log('event  ==> ', event);
-        switch (data.id){
-            case DOWNLOAD_TYPE.ESP_TOOLS: {
-                document.getElementById('esp-progress').value = data.progress;
-            }break;
-            case DOWNLOAD_TYPE.ARDUINO_BUILDER: {
-                document.getElementById('arudino-progress').value = data.progress;
-            }break;
-            default: break;
-        }
-        
+    ipcRenderer.on('ACTION_MSG', (event, msg) => {
+      if (msg.state == CONFIG.MSG_TYPE.DATA){
+        switch (msg.payload.type){
+        case CONFIG.EVENT_TYPE.DOWNLOAD_EVENT:{
+          document.getElementById(msg.payload.id).value = msg.payload.data;
+        }break;
+        case CONFIG.EVENT_TYPE.UNZIP_EVENT:{
+
+        }break;
+        case CONFIG.EVENT_TYPE.DELETE_EVENT:{
+
+        }break;
+        case CONFIG.EVENT_TYPE.UPDATE_EVENT:{
+
+        }break;
+        case CONFIG.EVENT_TYPE.OPENPATH_EVENT:{
+
+        }break;
+        default: break;
+        } 
+      } else {
+        switch (msg.payload.type){
+        case CONFIG.EVENT_TYPE.DOWNLOAD_EVENT:{
+          alert(msg.payload.data)
+        }break;
+        case CONFIG.EVENT_TYPE.UNZIP_EVENT:{
+
+        }break;
+        case CONFIG.EVENT_TYPE.DELETE_EVENT:{
+
+        }break;
+        case CONFIG.EVENT_TYPE.UPDATE_EVENT:{
+
+        }break;
+        case CONFIG.EVENT_TYPE.OPENPATH_EVENT:{
+
+        }break;
+        default: break;
+        } 
+      }
+      
+
     });
 
     ipcRenderer.on('error', (event, error) => {

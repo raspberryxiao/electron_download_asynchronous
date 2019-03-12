@@ -14,6 +14,11 @@
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
     "request": "^2.88.0",
-    "request-progress": "^3.0.0"
+    "request-progress": "^3.0.0",
+    "typescript": "^3.3.3333"
+  },
+  "devDependencies": {
+    "@types/node": "^11.11.1",
+    "ts-node-dev": "^1.0.0-pre.32"
   }
 }

@@ -15,7 +15,8 @@
     "path": "^0.12.7",
     "request": "^2.88.0",
     "request-progress": "^3.0.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.3333",
+    "unzip-stream": "^0.3.0"
   },
   "devDependencies": {
     "@types/node": "^11.11.1",

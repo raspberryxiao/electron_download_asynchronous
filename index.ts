@@ -3,59 +3,25 @@ import { app, ipcMain, BrowserWindow} from 'electron'
 // const request = require('request');
 // const progress = require('request-progress');
 import * as CONFIG  from'./appconfig'
+import * as path from 'path'
 const cp  =require('child_process');
 const child = cp.fork(__dirname + '/downloader');
 let windows;
 
-
-
-// function downloadFileCallback(arg, data)
-// {
-//     if (arg === "progress")
-//     {
-//       console.log(data)
-//       windows.webContents.send('progress', data);
-//     } else if (arg === "finished") {
-//       console.log('finished')
-//       console.log(data)
-//     } else if (arg === 'error') {
-//       console.log(data);
-//       windows.webContents.send('error', data);
-//     }
-// }
-
 ipcMain.on('ACTION_MSG', (event, payload) => {
-    switch ( payload.type ) {
-      case CONFIG.EVENT_TYPE.DOWNLOAD_EVENT:{
-        let option = {
-          id: payload.id,
-          type: payload.type,
-          url: payload.data,
-          path: payload.id + '.test.zip',
-        };
-        console.log(option);
-        child.send(option);
-      }break;
-      case CONFIG.EVENT_TYPE.UNZIP_EVENT:{
-
-      }break;
-      case CONFIG.EVENT_TYPE.DELETE_EVENT:{
-
-      }break;
-      case CONFIG.EVENT_TYPE.UPDATE_EVENT:{
-
-      }break;
-      case CONFIG.EVENT_TYPE.OPENPATH_EVENT:{
-
-      }break;
-      default: break;
-    }
+  let option = {
+    id: payload.id,
+    type: payload.type,
+    url: payload.data,
+    path: path.join(CONFIG.RES_PATH.download_path,payload.id + '.test.zip'),
+  };
+  console.log(option);
+  child.send(option);
 })
 
 ipcMain.on('hello', () => {
   console.log('got a hello');
 })
-
 
 
 /***

@@ -13,7 +13,15 @@
         ipcRenderer.send('ACTION_MSG', {
           id: 'arudino-progress',
           type: CONFIG.EVENT_TYPE.DOWNLOAD_EVENT,
-          data: CONFIG.REMOTE_RES.arduino_builder_mac,
+          data: CONFIG.RES_PATH.arduino_builder_mac,
+        });
+      };
+
+      var unzip_arduino_zip = function() {
+        ipcRenderer.send('ACTION_MSG', {
+          id: 'arudino-progress',
+          type: CONFIG.EVENT_TYPE.UNZIP_EVENT,
+          data: 'arduino-builder',
         });
       };
 
@@ -21,7 +29,7 @@
         ipcRenderer.send('ACTION_MSG', {
           id: 'esp-progress',
           type: CONFIG.EVENT_TYPE.DOWNLOAD_EVENT,
-          data: CONFIG.REMOTE_RES.arduino_builder_win,
+          data: CONFIG.RES_PATH.arduino_builder_win,
         });
       };
 // 后续加载更多动作
@@ -36,7 +44,7 @@
           document.getElementById(msg.payload.id).value = msg.payload.data;
         }break;
         case CONFIG.EVENT_TYPE.UNZIP_EVENT:{
-
+          alert(msg.payload.data);
         }break;
         case CONFIG.EVENT_TYPE.DELETE_EVENT:{
 
@@ -52,10 +60,10 @@
       } else {
         switch (msg.payload.type){
         case CONFIG.EVENT_TYPE.DOWNLOAD_EVENT:{
-          alert(msg.payload.data)
+          alert(msg.payload.data);
         }break;
         case CONFIG.EVENT_TYPE.UNZIP_EVENT:{
-
+          alert(msg.payload.data);
         }break;
         case CONFIG.EVENT_TYPE.DELETE_EVENT:{
 
@@ -80,6 +88,7 @@
 
     </script>
     <button onclick="download_arduino_zip();">下载arduino-builder</button>
+    <button onclick="unzip_arduino_zip();">解压arduino-builder</button>
     <button onclick="download_esp_zip();">下载esp_tools</button>
     <button onclick="say_hello();">say_hello</button>
     <progress id='arudino-progress' value='0' max='100'>

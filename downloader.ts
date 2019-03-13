@@ -13,68 +13,46 @@
 
 import { EventEmitter } from "events";
 import * as config from './appconfig';
+const unzip = require('unzip-stream');
+const { exec } = require('child_process');
 const fs = require('fs');
 const request = require('request')
 
  export class DOWNLOAD_QUEUE extends EventEmitter{
-  EVENT_QUEUE: config.EVENT_ITEM[];
-  QUEUE_LENGTH: number;
-  MAX_LENGTH: number;
+
   constructor() {
     super();
-    this.EVENT_QUEUE = [];
-    this.QUEUE_LENGTH = 0;
-    this.MAX_LENGTH = 10;
   }
 
-  public push(payload: config.EVENT_ITEM_PAYLOAD){
-    if (this.QUEUE_LENGTH < this.MAX_LENGTH) {
-      let event_item:config.EVENT_ITEM = {
-        state: config.EVENT_STATE.PUSE,
-        payload: payload,
-      }
-      this.EVENT_QUEUE.push(event_item);
-      this.QUEUE_LENGTH++;
-      return 0;
-    } else {
-      return -1;
-    }
-  }
-  
-  public pop(){
-    if (this.QUEUE_LENGTH == 0) {
-      return null;
-    } else {
-      //console.log('pop out ...',this.QUEUE_LENGTH)
-        this.EVENT_QUEUE[0].state = config.EVENT_STATE.READY;
-        const return_item = this.EVENT_QUEUE.shift();
-        this.QUEUE_LENGTH --;
-        //console.log('left  length ==> ',this.QUEUE_LENGTH)
-      return return_item;
-    }
-  }
-
-  public length(){
-    return this.QUEUE_LENGTH;
-  }
-
-  public addEvent(data: config.EVENT_ITEM_PAYLOAD){
-    !this.push(data) ? this.emit('RUN_EVENT', data) : console.log('error');
-  }
-
-  public runEvent(item: config.EVENT_ITEM, callback){
-    console.log('run ....',item)
-    if (item != null &&
-        item.state == config.EVENT_STATE.READY) {
-          console.log('run into ...')
-          switch ( item.payload.type ) {
+  public runEvent(payload: config.EVENT_ITEM, callback){
+    console.log('run ....',payload)
+    if (payload != null) {
+          switch ( payload.type ) {
             case config.EVENT_TYPE.DOWNLOAD_EVENT:{
-              item.state = config.EVENT_STATE.RUN;
-              console.log(item);
-              downloadFile(item.payload, callback);
+              downloadFile(payload, callback);
             }break;
             case config.EVENT_TYPE.UNZIP_EVENT:{
-      
+              unzipFile(payload)
+              .then((data)=>{
+                callback({
+                  state: config.MSG_TYPE.DATA,
+                  payload: {
+                    'id': payload.id, 
+                    'type': config.EVENT_TYPE.UNZIP_EVENT, 
+                    'data': "解压成功"
+                  }
+                })
+              })
+              .catch((error)=>{
+                callback({
+                  state: config.MSG_TYPE.ERROR,
+                  payload: {
+                    'id': payload.id, 
+                    'type': config.EVENT_TYPE.UNZIP_EVENT, 
+                    'data': error
+                  }
+                })
+              })
             }break;
             case config.EVENT_TYPE.DELETE_EVENT:{
       
@@ -93,39 +71,19 @@ const request = require('request')
 
 let download_queue = new DOWNLOAD_QUEUE();
 
-download_queue.on('RUN_EVENT', ()=>{
-  console.log(download_queue.QUEUE_LENGTH)
-  if (download_queue.QUEUE_LENGTH > 0) {
-    console.log('run item ...')
-    const item_run = download_queue.pop();
-     if (item_run != null){
-      download_queue.runEvent(item_run,download_cb);
-     }
-  }
+download_queue.on('RUN_EVENT', (payload)=>{
+  download_queue.runEvent(payload,download_cb);
 })
 
-download_queue.on('ADD_EVENT', (data)=>{
-  download_queue.addEvent(data);
-
-})
-
-/**
- *  process_part
- *  [user_action] -> process_part()  -> add/delete_event() -> run_event()
- * 
- */
-process.on('message', function(data: config.EVENT_ITEM_PAYLOAD) {
-  console.log('start process .....');
-  download_queue.emit('ADD_EVENT', data);
+process.on('message', function(data: config.EVENT_ITEM) {
+  download_queue.emit('RUN_EVENT', data);
 });
 
 function download_cb(data){
-  console.log('send process data ... ', data)
   process.send(data);
 }
 
 function downloadFile(option, callback) {//patchUrl, baseDir,
-  console.log('start downloading .....');
   let downloadCallback = callback; 
   let receivedBytes = 0;
   let totalBytes = 0;
@@ -135,7 +93,12 @@ function downloadFile(option, callback) {//patchUrl, baseDir,
     uri: option.url
   });
 
-  const out = fs.createWriteStream(option.path);
+  let out;
+  try {
+    out = fs.createWriteStream(option.path);
+  } catch (error) {
+    console.log(error);
+  }
   req.pipe(out);
 
   req.on('response', (data) => {
@@ -180,6 +143,31 @@ function downloadFile(option, callback) {//patchUrl, baseDir,
   });
 }
 
-function unzipFile(option, callback){
-  console.log('unzipFile ...');
+function unzipFile(payload){
+  return new Promise((resolve, reject) => {
+    if (fs.existsSync(payload.path)){
+      fs.createReadStream(payload.path)
+        .on('error', (err) => {
+          reject(err);
+        })
+        .on('end', () => {
+          if (fs.existsSync(payload.id)) {
+            if (config.platform !== 'win') {
+              console.log('start chmod');
+              exec(`chmod -R 755 ${payload.id}`, (error) => {
+                if (error) console.log(error);
+                reject(error);
+              });
+            }
+            resolve('Done');
+          } else {
+            reject('path not found!');
+          }
+        })
+        .pipe(unzip.Extract({ path: payload.id }))
+    } else {
+      reject('resource not found!');
+    }
+    
+  })
 }

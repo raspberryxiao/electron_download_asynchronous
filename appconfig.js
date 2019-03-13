@@ -28,11 +28,18 @@ var MSG_TYPE;
 //         OPENPATH = 5,
 //     }
 //====================================
-var REMOTE_RES;
-(function (REMOTE_RES) {
-    REMOTE_RES["latest_yml"] = "http://localhost/hardware/agent/resources/latest.yml";
-    REMOTE_RES["latest_mac_yml"] = "http://localhost/hardware/agent/resources/latest-mac.yml";
-    REMOTE_RES["arduino_builder_mac"] = "http://localhost/hardware/agent/resources/arduino-builder.mac.zip";
-    REMOTE_RES["arduino_builder_win"] = "http://localhost/hardware/agent/resources/arduino-builder.win.zip";
+var RES_PATH;
+(function (RES_PATH) {
+    RES_PATH["latest_yml"] = "http://localhost/hardware/agent/resources/latest.yml";
+    RES_PATH["latest_mac_yml"] = "http://localhost/hardware/agent/resources/latest-mac.yml";
+    RES_PATH["arduino_builder_mac"] = "http://localhost/hardware/agent/resources/arduino-builder.mac.zip";
+    RES_PATH["arduino_builder_win"] = "http://localhost/hardware/agent/resources/arduino-builder.win.zip";
+    RES_PATH["download_path"] = "downloads";
     //arduino_builder_win = 'http://172.16.5.121/resources/codemao-hardware-agent-1.3.0.deb',
-})(REMOTE_RES = exports.REMOTE_RES || (exports.REMOTE_RES = {}));
+})(RES_PATH = exports.RES_PATH || (exports.RES_PATH = {}));
+if (process.platform === 'darwin')
+    exports.platform = 'mac';
+if (process.platform === 'win32')
+    exports.platform = 'win';
+if (process.platform === 'linux')
+    exports.platform = 'linux';

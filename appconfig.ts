@@ -1,12 +1,8 @@
-export interface EVENT_ITEM_PAYLOAD {
+export  interface EVENT_ITEM {
     id: any,
     type: EVENT_TYPE,
     url?: string,
     path?: string,
-} 
-export  interface EVENT_ITEM {
-    state: EVENT_STATE,
-    payload: EVENT_ITEM_PAYLOAD,
 }
 export  enum EVENT_STATE {
     READY = 0,
@@ -48,11 +44,18 @@ export enum MSG_TYPE{
 //     }
 //====================================
 
-export enum REMOTE_RES {
+export enum RES_PATH {
         latest_yml = 'http://localhost/hardware/agent/resources/latest.yml',
         latest_mac_yml = 'http://localhost/hardware/agent/resources/latest-mac.yml',
         arduino_builder_mac = 'http://localhost/hardware/agent/resources/arduino-builder.mac.zip',
         arduino_builder_win = 'http://localhost/hardware/agent/resources/arduino-builder.win.zip',
+        download_path = 'downloads',
 
         //arduino_builder_win = 'http://172.16.5.121/resources/codemao-hardware-agent-1.3.0.deb',
     }
+    
+export let platform;
+if (process.platform === 'darwin') platform = 'mac';
+if (process.platform === 'win32') platform = 'win';
+if (process.platform === 'linux') platform = 'linux';
+

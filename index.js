@@ -4,55 +4,19 @@ var electron_1 = require("electron");
 // const request = require('request');
 // const progress = require('request-progress');
 var CONFIG = require("./appconfig");
+var path = require("path");
 var cp = require('child_process');
 var child = cp.fork(__dirname + '/downloader');
 var windows;
-// function downloadFileCallback(arg, data)
-// {
-//     if (arg === "progress")
-//     {
-//       console.log(data)
-//       windows.webContents.send('progress', data);
-//     } else if (arg === "finished") {
-//       console.log('finished')
-//       console.log(data)
-//     } else if (arg === 'error') {
-//       console.log(data);
-//       windows.webContents.send('error', data);
-//     }
-// }
 electron_1.ipcMain.on('ACTION_MSG', function (event, payload) {
-    switch (payload.type) {
-        case CONFIG.EVENT_TYPE.DOWNLOAD_EVENT:
-            {
-                var option = {
-                    id: payload.id,
-                    type: payload.type,
-                    url: payload.data,
-                    path: payload.id + '.test.zip'
-                };
-                console.log(option);
-                child.send(option);
-            }
-            break;
-        case CONFIG.EVENT_TYPE.UNZIP_EVENT:
-            {
-            }
-            break;
-        case CONFIG.EVENT_TYPE.DELETE_EVENT:
-            {
-            }
-            break;
-        case CONFIG.EVENT_TYPE.UPDATE_EVENT:
-            {
-            }
-            break;
-        case CONFIG.EVENT_TYPE.OPENPATH_EVENT:
-            {
-            }
-            break;
-        default: break;
-    }
+    var option = {
+        id: payload.id,
+        type: payload.type,
+        url: payload.data,
+        path: path.join(CONFIG.RES_PATH.download_path, payload.id + '.test.zip')
+    };
+    console.log(option);
+    child.send(option);
 });
 electron_1.ipcMain.on('hello', function () {
     console.log('got a hello');

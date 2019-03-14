@@ -18,7 +18,7 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const request = require('request')
 
- export class DOWNLOAD_QUEUE extends EventEmitter{
+ export class Controller extends EventEmitter{
 
   constructor() {
     super();
@@ -69,7 +69,7 @@ const request = require('request')
   }
  }
 
-let download_queue = new DOWNLOAD_QUEUE();
+let download_queue = new Controller();
 
 download_queue.on('RUN_EVENT', (payload)=>{
   download_queue.runEvent(payload,download_cb);

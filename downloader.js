@@ -29,12 +29,12 @@ var unzip = require('unzip-stream');
 var exec = require('child_process').exec;
 var fs = require('fs');
 var request = require('request');
-var DOWNLOAD_QUEUE = /** @class */ (function (_super) {
-    __extends(DOWNLOAD_QUEUE, _super);
-    function DOWNLOAD_QUEUE() {
+var Controller = /** @class */ (function (_super) {
+    __extends(Controller, _super);
+    function Controller() {
         return _super.call(this) || this;
     }
-    DOWNLOAD_QUEUE.prototype.runEvent = function (payload, callback) {
+    Controller.prototype.runEvent = function (payload, callback) {
         console.log('run ....', payload);
         if (payload != null) {
             switch (payload.type) {
@@ -83,10 +83,10 @@ var DOWNLOAD_QUEUE = /** @class */ (function (_super) {
             }
         }
     };
-    return DOWNLOAD_QUEUE;
+    return Controller;
 }(events_1.EventEmitter));
-exports.DOWNLOAD_QUEUE = DOWNLOAD_QUEUE;
-var download_queue = new DOWNLOAD_QUEUE();
+exports.Controller = Controller;
+var download_queue = new Controller();
 download_queue.on('RUN_EVENT', function (payload) {
     download_queue.runEvent(payload, download_cb);
 });

@@ -35,15 +35,6 @@ export enum MSG_TYPE{
     ERROR = 2,
 }
 
-// export enum ACTION_TYPE { 
-//         DOWNLOAD = 1, 
-//         UNZIP = 2,
-//         DELETE = 3,
-//         UPDATE = 4,
-//         OPENPATH = 5,
-//     }
-//====================================
-
 export enum RES_PATH {
         latest_yml = 'http://localhost/hardware/agent/resources/latest.yml',
         latest_mac_yml = 'http://localhost/hardware/agent/resources/latest-mac.yml',
